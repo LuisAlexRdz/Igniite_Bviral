@@ -16,6 +16,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.firefox.options import Options
+from Funciones_Excel import  *
 from Funciones import Funciones_Globales
 from selenium.webdriver import ActionChains
 t= 1
@@ -32,11 +33,12 @@ def log_on_failure(request):
 @pytest.fixture(scope="module")
 def setup_login_uno():
     global driver, f
-    ##driver.implicitly_wait(20)
     driver = webdriver.Chrome(executable_path='Drivers/chromedriver.exe')
     driver.get("https://test.igniite.io/")
-    ##driver.maximize_window()
+    driver.maximize_window()
+    driver.implicitly_wait(20)
     f = Funciones_Globales(driver)
+    fe = Funexcel(driver)
     allure.attach(driver.get_screenshot_as_png(), name="oraxio", attachment_type=AttachmentType.PNG)
     f.Click_Mixto("xpath","(//button[contains(.,'GET STARTED')])[2]",t)
     allure.attach(driver.get_screenshot_as_png(), name="login", attachment_type=AttachmentType.PNG)
@@ -53,10 +55,10 @@ def setup_login_uno():
 
 @pytest.mark.usefixtures("log_on_failure")
 @pytest.mark.usefixtures("setup_login_uno")
-def test_uno_navega():
-    print("Entrando al sistema dos")
+def test_uno_Navega():
+    print("Entrando al sistema uno")
     f.Click_Mixto("xpath","//span[contains(.,'LIVE TRADING')]",t)
-    allure.attach(driver.get_screenshot_as_png(),name="LIVE_TRADING",attachment_type=AttachmentType.PNG)
+    allure.attach(driver.get_screenshot_as_png(),name="LIVE_TRADING", attachment_type=AttachmentType.PNG)
     f.Click_Mixto("xpath","//span[contains(.,'ACCOUNTS')]",6)
     allure.attach(driver.get_screenshot_as_png(), name="ACCOUNTS", attachment_type=AttachmentType.PNG)
     f.Click_Mixto("xpath","(//span[contains(.,'ADMIN')])[1]",t)
@@ -65,7 +67,21 @@ def test_uno_navega():
     allure.attach(driver.get_screenshot_as_png(), name="HOME", attachment_type=AttachmentType.PNG)
     f.Click_Mixto("xpath", "//span[contains(.,'RESOLVER')]", 3)
     allure.attach(driver.get_screenshot_as_png(), name="RESOLVE", attachment_type=AttachmentType.PNG)
+    f.Click_Mixto("xpath","//header/div[1]/div[3]/div[2]/div[3]/*[1]",t)
+    f.Click_Mixto("xpath","//button[@type='button'][contains(.,'CONFIRM')]",t)
     time.sleep(5)
+
+@pytest.mark.usefixtures("log_on_failure")
+@pytest.mark.usefixtures("setup_login_uno")
+def test_dos_altaCuenta():
+    print("Entrando al sistema dos")
+    f.Click_Mixto("xpath", "//span[contains(.,'ACCOUNTS')]", 6)
+    allure.attach(driver.get_screenshot_as_png(), name="ACCOUNTS", attachment_type=AttachmentType.PNG)
+    f.Click_Mixto("xpath","//button[@type='button'][contains(.,'LINK ACCOUNT')]",t)
+    allure.attach(driver.get_screenshot_as_png(), name="Link_Account", attachment_type=AttachmentType.PNG)
+    f.Texto_Mixto("xpath","//input[contains(@id,'name')]","AlexRdz3", t)
+    allure.attach(driver.get_screenshot_as_png(), name="name", attachment_type=AttachmentType.PNG)
+
 
 def teardown_function():
     print("Salida del test")
