@@ -16,7 +16,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.firefox.options import Options
-from Funciones_Excel import  *
+#from Funciones_Excel import *
 from Funciones import Funciones_Globales
 from selenium.webdriver import ActionChains
 t= 1
@@ -38,7 +38,6 @@ def setup_login_uno():
     driver.maximize_window()
     driver.implicitly_wait(20)
     f = Funciones_Globales(driver)
-    fe = Funexcel(driver)
     allure.attach(driver.get_screenshot_as_png(), name="oraxio", attachment_type=AttachmentType.PNG)
     f.Click_Mixto("xpath","(//button[contains(.,'GET STARTED')])[2]",t)
     allure.attach(driver.get_screenshot_as_png(), name="login", attachment_type=AttachmentType.PNG)
