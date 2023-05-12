@@ -16,7 +16,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.firefox.options import Options
-#from Funciones_Excel import *
+from Funciones_Excel import *
 from Funciones import Funciones_Globales
 from selenium.webdriver import ActionChains
 t= 1
@@ -67,19 +67,62 @@ def test_uno_Navega():
     f.Click_Mixto("xpath", "//span[contains(.,'RESOLVER')]", 3)
     allure.attach(driver.get_screenshot_as_png(), name="RESOLVE", attachment_type=AttachmentType.PNG)
     f.Click_Mixto("xpath","//header/div[1]/div[3]/div[2]/div[3]/*[1]",t)
+    allure.attach(driver.get_screenshot_as_png(), name="logout", attachment_type=AttachmentType.PNG)
     f.Click_Mixto("xpath","//button[@type='button'][contains(.,'CONFIRM')]",t)
+    allure.attach(driver.get_screenshot_as_png(), name="confirm", attachment_type=AttachmentType.PNG)
     time.sleep(5)
 
 @pytest.mark.usefixtures("log_on_failure")
 @pytest.mark.usefixtures("setup_login_uno")
 def test_dos_altaCuenta():
     print("Entrando al sistema dos")
+    fe = Funexcel(driver)
     f.Click_Mixto("xpath", "//span[contains(.,'ACCOUNTS')]", 6)
     allure.attach(driver.get_screenshot_as_png(), name="ACCOUNTS", attachment_type=AttachmentType.PNG)
     f.Click_Mixto("xpath","//button[@type='button'][contains(.,'LINK ACCOUNT')]",t)
     allure.attach(driver.get_screenshot_as_png(), name="Link_Account", attachment_type=AttachmentType.PNG)
-    f.Texto_Mixto("xpath","//input[contains(@id,'name')]","AlexRdz3", t)
-    allure.attach(driver.get_screenshot_as_png(), name="name", attachment_type=AttachmentType.PNG)
+    ruta = "C://Users//PRIDE OMEGA//Documents//Alex Rdz//Igniite_Selenium//Igniite_Bviral//Documentos//accounts_ok.xlsx"
+    filas = fe.getRowCount(ruta, "Hoja1")
+
+    for i in range(2, filas + 1):
+        Name = fe.readData(ruta, "Hoja1", i, 1)
+        Key = fe.readData(ruta, "Hoja1", i, 2)
+        Secret = fe.readData(ruta, "Hoja1", i, 3)
+
+        f.Texto_Mixto("xpath", "//input[contains(@id,'name')]", Name, t)
+        allure.attach(driver.get_screenshot_as_png(), name="name", attachment_type=AttachmentType.PNG)
+        f.Texto_Mixto("xpath", "//input[contains(@id,'key')]", Key, t)
+        allure.attach(driver.get_screenshot_as_png(), name="key", attachment_type=AttachmentType.PNG)
+        f.Texto_Mixto("xpath", "//input[contains(@id,'secret')]", Secret, t)
+        allure.attach(driver.get_screenshot_as_png(), name="secret", attachment_type=AttachmentType.PNG)
+        f.Click_Mixto("xpath","//button[@type='submit'][contains(.,'SAVE')]", t)
+        allure.attach(driver.get_screenshot_as_png(), name="save", attachment_type=AttachmentType.PNG)
+        f.Click_Mixto("xpath","//button[@type='button'][contains(.,'YES')]",5)
+
+        e = f.Existe("xpath", "//input[contains(@id,'name')]", t)
+        if (e == "Existe"):
+            print("El elemento se inserto correctamente")
+            fe.writeData(ruta, "Hoja1", i, 4, "Insertado")
+            fe.writeData(ruta, "Hoja1", i, 5, "Sub Account: " + Name)
+        else:
+
+            print("No se inserto")
+            fe.writeData(ruta, "Hoja1", i, 4, "Error")
+
+    f.Click_Mixto("xpath", "//header/div[1]/div[3]/div[2]/div[3]/*[1]", t)
+    allure.attach(driver.get_screenshot_as_png(), name="logout", attachment_type=AttachmentType.PNG)
+    f.Click_Mixto("xpath", "//button[@type='button'][contains(.,'CONFIRM')]", t)
+    allure.attach(driver.get_screenshot_as_png(), name="confirm", attachment_type=AttachmentType.PNG)
+
+@pytest.mark.usefixtures("log_on_failure")
+@pytest.mark.usefixtures("setup_login_uno")
+def test_dos_bajaCuenta():
+    print("Entrando al sistema tres")
+    f.Click_Mixto("xpath", "//span[contains(.,'ACCOUNTS')]", 6)
+    allure.attach(driver.get_screenshot_as_png(), name="ACCOUNTS", attachment_type=AttachmentType.PNG)
+    txt = WebDriverWait(driver, 10).until((EC.visibility_of_element_located((By.XPATH,"//div[@class='text-base text-palette-beigde-100'][contains(.,'Sub Account:')]"))))
+
+
 
 
 def teardown_function():
